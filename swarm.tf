@@ -1,3 +1,5 @@
+# TODO Reuse some components between resources?
+
 resource "digitalocean_ssh_key" "docker_swarm_ssh_key" {
     name = "${var.do_swarm_name}-ssh-key"
     public_key = "${file(var.do_ssh_key_public)}"
@@ -34,6 +36,12 @@ resource "digitalocean_droplet" "docker_swarm_master_initial" {
 
    provisioner "local-exec" {
       command = "scp -o StrictHostKeyChecking=no -o NoHostAuthenticationForLocalhost=yes -o UserKnownHostsFile=/dev/null -i ${var.do_ssh_key_private} root@${self.ipv4_address}:/var/lib/docker/manager.token ."
+   }
+
+   provisioner "remote-exec" {
+      inline = [
+         "curl -sSL https://dl.bintray.com/emccode/rexray/install | sh -s -- stable"
+      ]
    }
 
    # TODO Visualizer
@@ -74,6 +82,12 @@ resource "digitalocean_droplet" "docker_swarm_agent" {
    provisioner "file" {
       source = "worker.token"
       destination = "/var/lib/docker/worker.token"
+   }
+
+   provisioner "remote-exec" {
+      inline = [
+         "curl -sSL https://dl.bintray.com/emccode/rexray/install | sh -s -- stable"
+      ]
    }
 
    provisioner "remote-exec" {
