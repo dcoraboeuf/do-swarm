@@ -36,7 +36,14 @@ resource "digitalocean_droplet" "docker_swarm_master_initial" {
       command = "scp -o StrictHostKeyChecking=no -o NoHostAuthenticationForLocalhost=yes -o UserKnownHostsFile=/dev/null -i ${var.do_ssh_key_private} root@${self.ipv4_address}:/var/lib/docker/manager.token ."
    }
 
-   # TODO Visualizer
+   provisioner "remote-exec" {
+      inline = [
+         "curl -sSL -o /usr/bin/docker-volume-plugin-dostorage https://github.com/omallo/docker-volume-plugin-dostorage/releases/download/v0.3.0/docker-volume-plugin-dostorage_linux_amd64",
+         "chmod +x /usr/bin/docker-volume-plugin-dostorage",
+         "docker-volume-plugin-dostorage --access-token=${var.do_token} &",
+         "service docker restart"
+      ]
+   }
 
 }
 
@@ -79,6 +86,15 @@ resource "digitalocean_droplet" "docker_swarm_agent" {
    provisioner "remote-exec" {
       inline = [
          "docker swarm join --token $(cat /var/lib/docker/worker.token) ${digitalocean_droplet.docker_swarm_master_initial.ipv4_address}:2377"
+      ]
+   }
+
+   provisioner "remote-exec" {
+      inline = [
+         "curl -sSL -o /usr/bin/docker-volume-plugin-dostorage https://github.com/omallo/docker-volume-plugin-dostorage/releases/download/v0.3.0/docker-volume-plugin-dostorage_linux_amd64",
+         "chmod +x /usr/bin/docker-volume-plugin-dostorage",
+         "docker-volume-plugin-dostorage --access-token=${var.do_token} &",
+         "service docker restart"
       ]
    }
 }
