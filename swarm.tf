@@ -52,6 +52,10 @@ resource "digitalocean_floating_ip" "docker_swarm_floating_ip" {
     region = "${digitalocean_droplet.docker_swarm_master_initial.region}"
 }
 
+output "docker_swarm_ip" {
+   value = "${digitalocean_floating_ip.docker_swarm_floating_ip.ip_address}"
+}
+
 resource "digitalocean_record" "docker_swarm_dns_record" {
     domain = "${var.docker_swarm_domain}"
     type = "A"
