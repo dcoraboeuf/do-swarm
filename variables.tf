@@ -16,7 +16,7 @@ variable "aws_region" {
 
 variable "aws_ami_id" {
   description = "AMI ID of the image to use for all the nodes"
-  default = "ami-8504fdea"
+  default = "ami-f9619996"
 }
 
 variable "aws_instance_type" {
@@ -26,7 +26,7 @@ variable "aws_instance_type" {
 
 variable "aws_instance_user" {
   description = "EC2 SSH user"
-  default = "ubuntu"
+  default = "ec2-user"
 }
 
 ## SSH key pair
