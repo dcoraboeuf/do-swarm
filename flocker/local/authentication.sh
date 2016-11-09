@@ -32,6 +32,8 @@ flocker-ca create-control-certificate "${DOMAIN_ENTRY}.${DOMAIN_NAME}"
 echo "[flocker] Generating node authentication certificates..."
 mkdir -p flocker-ca-node
 flocker-ca create-node-certificate --outputpath flocker-ca-node
+mv flocker-ca-node/*.crt flocker-ca-node/node.crt
+mv flocker-ca-node/*.key flocker-ca-node/node.key
 
 echo "[flocker] Generating API client certificate for ${FLOCKER_CLIENT_NAME}..."
 mkdir -p flocker-ca-client
