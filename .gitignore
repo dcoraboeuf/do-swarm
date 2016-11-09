@@ -7,3 +7,4 @@ do-key*
 /*.crt
 /graph.png
 /flocker-ca-node
+/flocker-ca-client

@@ -47,7 +47,11 @@ variable "do_swarm_agent_count" {
   default = "1"
 }
 
-variable "flocker_local_path" {
+variable "flocker_client_path" {
    description = "Path to the local installation folder of flocker-client"
    default = "flocker-client"
+}
+
+variable "flocker_client_name" {
+   description = "Identifier for THIS Flocker client"
 }

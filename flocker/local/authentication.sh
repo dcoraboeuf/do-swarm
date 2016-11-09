@@ -3,20 +3,24 @@
 FLOCKER_CLIENT=$1
 echo "[flocker] Using Flocker client installed at: ${FLOCKER_CLIENT}"
 
-CLUSTER_NAME=$2
+FLOCKER_CLIENT_NAME=$2
+echo "[flocker] Flocker client name: ${FLOCKER_CLIENT_NAME}"
+
+CLUSTER_NAME=$3
 echo "[flocker] Using cluster name: ${CLUSTER_NAME}"
 
-DOMAIN_ENTRY=$3
-DOMAIN_NAME=$4
+DOMAIN_ENTRY=$4
+DOMAIN_NAME=$5
 echo "[flocker] Using hostname: ${DOMAIN_ENTRY}.${DOMAIN_NAME}"
 
 source ${FLOCKER_CLIENT}/bin/activate
-flocker-ca --version
+echo "[flocker] Version: $(flocker-ca --version)"
 
 echo "[flocker] Cleanup"
 rm -f *.crt
 rm -f *.key
 rm -rf flocker-ca-node
+rm -rf flocker-ca-client
 
 echo "[flocker] Generating cluster certificates for ${CLUSTER_NAME}..."
 flocker-ca initialize ${CLUSTER_NAME}
@@ -27,3 +31,7 @@ flocker-ca create-control-certificate "${DOMAIN_ENTRY}.${DOMAIN_NAME}"
 echo "[flocker] Generating node authentication certificates..."
 mkdir -p flocker-ca-node
 flocker-ca create-node-certificate --outputpath flocker-ca-node
+
+echo "[flocker] Generating API client certificate for ${FLOCKER_CLIENT_NAME}..."
+mkdir -p flocker-ca-client
+flocker-ca create-api-certificate --outputpath flocker-ca-client ${FLOCKER_CLIENT_NAME}

@@ -14,7 +14,7 @@ resource "digitalocean_ssh_key" "docker_swarm_ssh_key" {
 resource "null_resource" "flocker_authentication" {
    # Installation of the Flocker client
    provisioner "local-exec" {
-      command = "flocker/local/authentication.sh ${var.flocker_local_path} ${var.do_swarm_name} ${var.docker_swarm_domain_name} ${var.docker_swarm_domain}"
+      command = "flocker/local/authentication.sh ${var.flocker_client_path} ${var.flocker_client_name} ${var.do_swarm_name} ${var.docker_swarm_domain_name} ${var.docker_swarm_domain}"
    }
 }
 
