@@ -197,6 +197,11 @@ resource "digitalocean_droplet" "docker_swarm_agent" {
       destination = "/etc/flocker"
    }
 
+   provisioner "file" {
+      source = "flocker-ca-client-plugin/"
+      destination = "/etc/flocker"
+   }
+
    provisioner "remote-exec" {
       inline = [
          "mv /etc/flocker/*.crt /etc/flocker/node.crt",

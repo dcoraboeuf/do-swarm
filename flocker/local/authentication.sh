@@ -21,6 +21,7 @@ rm -f *.crt
 rm -f *.key
 rm -rf flocker-ca-node
 rm -rf flocker-ca-client
+rm -rf flocker-ca-client-plugin
 
 echo "[flocker] Generating cluster certificates for ${CLUSTER_NAME}..."
 flocker-ca initialize ${CLUSTER_NAME}
@@ -35,3 +36,7 @@ flocker-ca create-node-certificate --outputpath flocker-ca-node
 echo "[flocker] Generating API client certificate for ${FLOCKER_CLIENT_NAME}..."
 mkdir -p flocker-ca-client
 flocker-ca create-api-certificate --outputpath flocker-ca-client ${FLOCKER_CLIENT_NAME}
+
+echo "[flocker] Generating API client certificate for the plugin..."
+mkdir -p flocker-ca-client-plugin
+flocker-ca create-api-certificate --outputpath flocker-ca-client-plugin plugin
