@@ -3,13 +3,13 @@ variable "do_token" {
 }
 
 variable "docker_swarm_domain" {
-   description = "Name of the DNS domain for the swarm"
-   default = "nemerosa.net"
+  description = "Name of the DNS domain for the swarm"
+  default = "nemerosa.net"
 }
 
 variable "docker_swarm_domain_name" {
-   description = "Name of the swarm in the DNS domain"
-   default = "swarm"
+  description = "Name of the swarm in the DNS domain"
+  default = "swarm"
 }
 
 variable "do_region" {
@@ -23,13 +23,13 @@ variable "do_agent_size" {
 }
 
 variable "do_ssh_key_public" {
-   description = "Path to the SSH public key"
-   default = "./do-key.pub"
+  description = "Path to the SSH public key"
+  default = "./do-key.pub"
 }
 
 variable "do_ssh_key_private" {
-   description = "Path to the SSH private key"
-   default = "./do-key"
+  description = "Path to the SSH private key"
+  default = "./do-key"
 }
 
 variable "do_swarm_name" {
@@ -48,10 +48,11 @@ variable "do_swarm_agent_count" {
 }
 
 variable "flocker_client_path" {
-   description = "Path to the local installation folder of flocker-client"
-   default = "flocker-client"
+  description = "Path to the local installation folder of flocker-client"
+  default = "flocker-client"
 }
 
 variable "flocker_client_name" {
-   description = "Identifier for THIS Flocker client"
+  description = "Identifier for THIS Flocker client"
+  default = "local"
 }

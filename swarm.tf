@@ -77,7 +77,7 @@ resource "digitalocean_droplet" "docker_swarm_master_initial" {
       ]
    }
 
-   # Flocker control service
+   # Flocker control service installation
 
    provisioner "remote-exec" {
       inline = [
@@ -104,6 +104,23 @@ resource "digitalocean_droplet" "docker_swarm_master_initial" {
       inline = [
          "chmod 0700 /etc/flocker",
          "chmod 0600 /etc/flocker/control-service.key"
+      ]
+   }
+
+   # Enabling the Flocker control service
+
+   provisioner "file" {
+      source = "flocker/remote/flocker-control.override"
+      destination = "/etc/flocker/"
+   }
+
+   provisioner "remote-exec" {
+      inline = [
+         "echo 'flocker-control-api	    4523/tcp        # Flocker Control API port'   >> /etc/services",
+         "echo 'flocker-control-agent   4524/tcp        # Flocker Control Agent port' >> /etc/services",
+         "service flocker-control start",
+         "ufw allow flocker-control-api",
+         "ufw allow flocker-control-agent"
       ]
    }
 
