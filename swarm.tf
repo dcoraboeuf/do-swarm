@@ -1,14 +1,17 @@
 ##################################################################################################################
-# TODO SSH Key
+# ECR registry
 ##################################################################################################################
 
-//resource "digitalocean_ssh_key" "docker_swarm_ssh_key" {
-//  name = "${var.do_swarm_name}-ssh-key"
-//  public_key = "${file(var.do_ssh_key_public)}"
-//}
+resource "aws_ecr_repository" "ecr_repository" {
+  name = "${var.swarm_name}_repository"
+}
+
+output "aws_ecr_repository_id" {
+  value = "${aws_ecr_repository.ecr_repository.registry_id}"
+}
 
 ##################################################################################################################
-# TODO Initial master node
+# Initial master node
 ##################################################################################################################
 
 //resource "digitalocean_droplet" "docker_swarm_master_initial" {
