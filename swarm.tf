@@ -202,13 +202,6 @@ resource "digitalocean_droplet" "docker_swarm_agent" {
       destination = "/etc/flocker"
    }
 
-   provisioner "remote-exec" {
-      inline = [
-         "mv /etc/flocker/*.crt /etc/flocker/node.crt",
-         "mv /etc/flocker/*.key /etc/flocker/node.key"
-      ]
-   }
-
    provisioner "file" {
       source = "cluster.crt"
       destination = "/etc/flocker/"
