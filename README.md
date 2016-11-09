@@ -10,6 +10,8 @@ Generate a Digital Ocean API key and expose it as a `TF_VAR_do_token` environmen
 
 Generate a SSH key pair - your can use the `init.sh` script. The key pair will be generated with `do-key` and `do-key.pub` names in the current directory.
 
+Run `source env.sh` to activate the different tokens.
+
 ## Configuration
 
 All configuration items are exposed as [Terraform variables](https://www.terraform.io/docs/configuration/variables.html) in the `variables.tf` file. Read their description to get their meaning. Most of them have default values.

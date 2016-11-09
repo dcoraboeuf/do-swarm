@@ -46,6 +46,26 @@ resource "digitalocean_droplet" "docker_swarm_master_initial" {
     command = "scp -o StrictHostKeyChecking=no -o NoHostAuthenticationForLocalhost=yes -o UserKnownHostsFile=/dev/null -i ${var.do_ssh_key_private} root@${self.ipv4_address}:/var/lib/docker/manager.token ."
   }
 
+  # Convoy setup
+
+  provisioner "remote-exec" {
+    inline = [
+      "mkdir -p /var/lib/convoy",
+    ]
+  }
+
+  provisioner "file" {
+    source = "convoy/remote/"
+    destination = "/var/lib/convoy"
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "chmod u+x /var/lib/convoy/*.sh",
+      "/var/lib/convoy/install.sh"
+    ]
+  }
+
 }
 
 ##################################################################################################################
@@ -101,4 +121,25 @@ resource "digitalocean_droplet" "docker_swarm_agent" {
       "docker swarm join --token $(cat /var/lib/docker/worker.token) ${digitalocean_droplet.docker_swarm_master_initial.ipv4_address}:2377"
     ]
   }
+
+  # Convoy setup
+
+  provisioner "remote-exec" {
+    inline = [
+      "mkdir -p /var/lib/convoy",
+    ]
+  }
+
+  provisioner "file" {
+    source = "convoy/remote/"
+    destination = "/var/lib/convoy"
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "chmod u+x /var/lib/convoy/*.sh",
+      "/var/lib/convoy/install.sh"
+    ]
+  }
+
 }
