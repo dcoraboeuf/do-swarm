@@ -10,3 +10,5 @@ do-key*
 /flocker-ca-client
 /flocker-ca-client-plugin
 /.gradle
+/.idea
+*.iml
