@@ -9,3 +9,4 @@ do-key*
 /flocker-ca-node
 /flocker-ca-client
 /flocker-ca-client-plugin
+/.gradle
