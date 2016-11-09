@@ -5,3 +5,4 @@ do-key*
 /flocker-client
 /*.key
 /*.crt
+/graph.png

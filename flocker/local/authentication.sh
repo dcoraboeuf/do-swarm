@@ -13,6 +13,10 @@ echo "[flocker] Using hostname: ${DOMAIN_ENTRY}.${DOMAIN_NAME}"
 source ${FLOCKER_CLIENT}/bin/activate
 flocker-ca --version
 
+echo "[flocker] Cleanup"
+rm -f *.crt
+rm -f *.key
+
 echo "[flocker] Generating cluster certificates for ${CLUSTER_NAME}..."
 flocker-ca initialize ${CLUSTER_NAME}
 

@@ -23,7 +23,7 @@ resource "null_resource" "flocker_authentication" {
 ###################################################################################################
 
 resource "digitalocean_droplet" "docker_swarm_master_initial" {
-   depends_on = "null_resource.flocker_authentication"
+   depends_on = [ "null_resource.flocker_authentication" ]
    count = 1
    name = "${format("${var.do_swarm_name}-master-%02d", count.index)}"
 
@@ -74,6 +74,36 @@ resource "digitalocean_droplet" "docker_swarm_master_initial" {
       inline = [
          "chmod u+x /var/lib/flocker/node.sh",
          "/var/lib/flocker/node.sh"
+      ]
+   }
+
+   # Flocker control service
+
+   provisioner "remote-exec" {
+      inline = [
+         "mkdir /etc/flocker"
+      ]
+   }
+
+   provisioner "file" {
+      source = "control-${var.docker_swarm_domain_name}.${var.docker_swarm_domain}.crt"
+      destination = "/etc/flocker/control-service.crt"
+   }
+
+   provisioner "file" {
+      source = "control-${var.docker_swarm_domain_name}.${var.docker_swarm_domain}.key"
+      destination = "/etc/flocker/control-service.key"
+   }
+
+   provisioner "file" {
+      source = "cluster.crt"
+      destination = "/etc/flocker/"
+   }
+
+   provisioner "remote-exec" {
+      inline = [
+         "chmod 0700 /etc/flocker",
+         "chmod 0600 /etc/flocker/control-service.key"
       ]
    }
 
