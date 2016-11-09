@@ -12,6 +12,18 @@ variable "aws_region" {
   description = "AWS Region"
 }
 
+## SSH key pair
+
+variable "ssh_key_public" {
+  description = "Path to the SSH public key"
+  default = "./aws-key.pub"
+}
+
+variable "ssh_key_private" {
+  description = "Path to the SSH private key"
+  default = "./aws-key"
+}
+
 ## Swarm configuration
 
 variable "swarm_name" {
