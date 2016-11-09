@@ -1,4 +1,4 @@
 #!/bin/bash
 
-rm -f do-key*
+rm -f aws-key*
 rm -f *.token
