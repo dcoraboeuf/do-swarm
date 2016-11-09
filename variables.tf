@@ -12,6 +12,18 @@ variable "aws_region" {
   description = "AWS Region"
 }
 
+## AWS node definition
+
+variable "aws_ami_id" {
+  description = "AMI ID of the image to use for all the nodes"
+  default = "ami-8504fdea"
+}
+
+variable "aws_instance_type" {
+  description = "EC2 instance type"
+  default = "t2.nano"
+}
+
 ## SSH key pair
 
 variable "ssh_key_public" {

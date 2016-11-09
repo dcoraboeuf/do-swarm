@@ -1,15 +1,26 @@
 ##################################################################################################################
-# TODO SSH Key
+# Initial master node
 ##################################################################################################################
 
-//resource "digitalocean_ssh_key" "docker_swarm_ssh_key" {
-//  name = "${var.do_swarm_name}-ssh-key"
-//  public_key = "${file(var.do_ssh_key_public)}"
-//}
+resource "aws_instance" "docker_swarm_master_initial" {
+  count = 1
 
-##################################################################################################################
-# TODO Initial master node
-##################################################################################################################
+  ami = "${var.aws_ami_id}"
+  instance_type = "${var.aws_instance_type}"
+
+  key_name = "${aws_key_pair.aws_ssh_key.key_name}"
+
+  monitoring = true
+
+  // TODO VPC group
+
+  tags {
+    DomainName = "${var.dns_domain}"
+    SwarmName = "${var.swarm_name}"
+    SwarmRole = "primary"
+    SwarmNodeName = "${format("${var.swarm_name}-master-%02d", count.index)}"
+  }
+}
 
 //resource "digitalocean_droplet" "docker_swarm_master_initial" {
 //  count = 1
