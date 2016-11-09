@@ -14,6 +14,12 @@ Generate a SSH key pair - your can use the `init.sh` script. The key pair will b
 
 All configuration items are exposed as [Terraform variables](https://www.terraform.io/docs/configuration/variables.html) in the `variables.tf` file. Read their description to get their meaning. Most of them have default values.
 
+### Flocker configuration
+
+Source: https://flocker-docs.clusterhq.com/en/latest/docker-integration/manual-install.html
+
+1. install the Flocker client on the machine you run the `terraform` scripts from.
+
 ## Running
 
 In the local directory, just run:
