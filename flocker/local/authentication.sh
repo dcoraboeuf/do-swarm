@@ -16,9 +16,14 @@ flocker-ca --version
 echo "[flocker] Cleanup"
 rm -f *.crt
 rm -f *.key
+rm -rf flocker-ca-node
 
 echo "[flocker] Generating cluster certificates for ${CLUSTER_NAME}..."
 flocker-ca initialize ${CLUSTER_NAME}
 
 echo "[flocker] Generating control service certificates for ${DOMAIN_ENTRY}.${DOMAIN_NAME}..."
 flocker-ca create-control-certificate "${DOMAIN_ENTRY}.${DOMAIN_NAME}"
+
+echo "[flocker] Generating node authentication certificates..."
+mkdir -p flocker-ca-node
+flocker-ca create-node-certificate --outputpath flocker-ca-node

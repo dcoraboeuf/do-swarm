@@ -134,6 +134,8 @@ resource "digitalocean_record" "docker_swarm_dns_record" {
 ###################################################################################################
 
 resource "digitalocean_droplet" "docker_swarm_agent" {
+   depends_on = [ "null_resource.flocker_authentication" ]
+
    count = "${var.do_swarm_agent_count}"
    name = "${format("${var.do_swarm_name}-agent-%02d", count.index)}"
 
@@ -179,6 +181,38 @@ resource "digitalocean_droplet" "docker_swarm_agent" {
       inline = [
          "chmod u+x /var/lib/flocker/node.sh",
          "/var/lib/flocker/node.sh"
+      ]
+   }
+
+   # Flocker node
+
+   provisioner "remote-exec" {
+      inline = [
+         "mkdir /etc/flocker"
+      ]
+   }
+
+   provisioner "file" {
+      source = "flocker-ca-node/"
+      destination = "/etc/flocker"
+   }
+
+   provisioner "remote-exec" {
+      inline = [
+         "mv /etc/flocker/*.crt /etc/flocker/node.crt",
+         "mv /etc/flocker/*.key /etc/flocker/node.key"
+      ]
+   }
+
+   provisioner "file" {
+      source = "cluster.crt"
+      destination = "/etc/flocker/"
+   }
+
+   provisioner "remote-exec" {
+      inline = [
+         "chmod 0700 /etc/flocker",
+         "chmod 0600 /etc/flocker/node.key"
       ]
    }
 

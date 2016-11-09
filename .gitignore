@@ -6,3 +6,4 @@ do-key*
 /*.key
 /*.crt
 /graph.png
+/flocker-ca-node
