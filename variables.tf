@@ -24,6 +24,11 @@ variable "aws_instance_type" {
   default = "t2.nano"
 }
 
+variable "aws_instance_user" {
+  description = "EC2 SSH user"
+  default = "ubuntu"
+}
+
 ## SSH key pair
 
 variable "ssh_key_public" {

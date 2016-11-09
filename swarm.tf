@@ -20,6 +20,24 @@ resource "aws_instance" "docker_swarm_master_initial" {
     SwarmRole = "primary"
     SwarmNodeName = "${format("${var.swarm_name}-master-%02d", count.index)}"
   }
+
+  // Connection
+
+  connection {
+    user = "${var.aws_instance_user}"
+    private_key = "${file(var.ssh_key_private)}"
+    agent = false
+  }
+
+  // Installation of Docker
+
+  provisioner "remote-exec" {
+    inline = [
+      "apt-get update",
+      "apt-get install docker-engine",
+      "service docker start",
+    ]
+  }
 }
 
 //resource "digitalocean_droplet" "docker_swarm_master_initial" {
