@@ -66,6 +66,14 @@ resource "digitalocean_droplet" "docker_swarm_master_initial" {
     ]
   }
 
+  # Convoy startup
+
+  provisioner "remote-exec" {
+    inline = [
+      "DO_TOKEN=${var.convoy_do_token} convoy daemon --drivers digitalocean"
+    ]
+  }
+
 }
 
 ##################################################################################################################
@@ -139,6 +147,14 @@ resource "digitalocean_droplet" "docker_swarm_agent" {
     inline = [
       "chmod u+x /var/lib/convoy/*.sh",
       "/var/lib/convoy/install.sh"
+    ]
+  }
+
+  # Convoy startup
+
+  provisioner "remote-exec" {
+    inline = [
+      "DO_TOKEN=${var.convoy_do_token} convoy daemon --drivers digitalocean"
     ]
   }
 

@@ -46,3 +46,9 @@ variable "do_swarm_agent_count" {
   description = "Number of agents to deploy"
   default = "1"
 }
+
+# Convoy setup
+
+variable "convoy_do_token" {
+  description = "Digital Ocean API key used by Convoy to create volumes"
+}
