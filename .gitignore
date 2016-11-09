@@ -3,3 +3,5 @@
 do-key*
 *.token
 /flocker-client
+/*.key
+/*.crt

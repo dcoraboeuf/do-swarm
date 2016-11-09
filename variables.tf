@@ -46,3 +46,8 @@ variable "do_swarm_agent_count" {
   description = "Number of agents to deploy"
   default = "1"
 }
+
+variable "flocker_local_path" {
+   description = "Path to the local installation folder of flocker-client"
+   default = "flocker-client"
+}

@@ -1,9 +1,29 @@
+###################################################################################################
+# SSH key registration
+###################################################################################################
+
 resource "digitalocean_ssh_key" "docker_swarm_ssh_key" {
     name = "${var.do_swarm_name}-ssh-key"
     public_key = "${file(var.do_ssh_key_public)}"
 }
 
+###################################################################################################
+# Flocker authentication file preparation
+###################################################################################################
+
+resource "null_resource" "flocker_authentication" {
+   # Installation of the Flocker client
+   provisioner "local-exec" {
+      command = "flocker/local/authentication.sh ${var.flocker_local_path} ${var.do_swarm_name} ${var.docker_swarm_domain_name} ${var.docker_swarm_domain}"
+   }
+}
+
+###################################################################################################
+# Master node
+###################################################################################################
+
 resource "digitalocean_droplet" "docker_swarm_master_initial" {
+   depends_on = "null_resource.flocker_authentication"
    count = 1
    name = "${format("${var.do_swarm_name}-master-%02d", count.index)}"
 
@@ -46,7 +66,7 @@ resource "digitalocean_droplet" "docker_swarm_master_initial" {
    }
 
    provisioner "file" {
-      source = "flocker/node.sh"
+      source = "flocker/remote/node.sh"
       destination = "/var/lib/flocker/node.sh"
    }
 
@@ -58,6 +78,10 @@ resource "digitalocean_droplet" "docker_swarm_master_initial" {
    }
 
 }
+
+###################################################################################################
+# Master DNS registration
+###################################################################################################
 
 resource "digitalocean_floating_ip" "docker_swarm_floating_ip" {
     droplet_id = "${digitalocean_droplet.docker_swarm_master_initial.id}"
@@ -71,7 +95,13 @@ resource "digitalocean_record" "docker_swarm_dns_record" {
     value = "${digitalocean_floating_ip.docker_swarm_floating_ip.ip_address}"
 }
 
-# TODO Other masters
+###################################################################################################
+# TODO Other master nodes
+###################################################################################################
+
+###################################################################################################
+# Swarm agents
+###################################################################################################
 
 resource "digitalocean_droplet" "docker_swarm_agent" {
    count = "${var.do_swarm_agent_count}"
@@ -111,7 +141,7 @@ resource "digitalocean_droplet" "docker_swarm_agent" {
    }
 
    provisioner "file" {
-      source = "flocker/node.sh"
+      source = "flocker/remote/node.sh"
       destination = "/var/lib/flocker/node.sh"
    }
 
@@ -121,5 +151,5 @@ resource "digitalocean_droplet" "docker_swarm_agent" {
          "/var/lib/flocker/node.sh"
       ]
    }
-   
+
 }
