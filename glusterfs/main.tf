@@ -36,6 +36,7 @@ resource "digitalocean_droplet" "glusterfs_primary" {
       "add-apt-repository ppa:semiosis/ubuntu-glusterfs-3.8",
       "apt-get update",
       "apt-get install -y glusterfs-server",
+      "mkdir -p ${var.glusterfs_storage_path}",
     ]
   }
 

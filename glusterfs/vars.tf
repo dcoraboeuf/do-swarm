@@ -46,3 +46,8 @@ variable "glusterfs_count" {
   description = "Number of GlusterFS servers"
   default = "2"
 }
+
+variable "glusterfs_storage_path" {
+  description = "Path to the storage directory"
+  default = "/storage"
+}
