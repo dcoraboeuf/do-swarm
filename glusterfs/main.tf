@@ -22,4 +22,14 @@ resource "digitalocean_droplet" "docker_swarm_master_initial" {
     agent = false
   }
 
+  provisioner "remote-exec" {
+    inline = [
+      "apt-get update",
+      "apt-get install -y python-software-properties",
+      "add-apt-repository ppa:semiosis/ubuntu-glusterfs-3.8",
+      "apt-get update",
+      "apt-get install -y glusterfs-server",
+    ]
+  }
+
 }

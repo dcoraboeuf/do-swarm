@@ -13,7 +13,7 @@ variable "do_region" {
 
 variable "do_image" {
   description = "Slug for the image to install"
-  default = "ubuntu"
+  default = "ubuntu-16-04-x64"
 }
 
 variable "do_server_size" {
@@ -44,6 +44,5 @@ variable "glusterfs_cluster" {
 
 variable "glusterfs_count" {
   description = "Number of GlusterFS servers"
-  # TODO Increase the number of hosts
-  default = "1"
+  default = "2"
 }
