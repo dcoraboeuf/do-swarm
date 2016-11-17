@@ -42,12 +42,18 @@ variable "glusterfs_cluster" {
   default = "glusterfs"
 }
 
-variable "glusterfs_count" {
-  description = "Number of GlusterFS servers"
-  default = "2"
+variable "glusterfs_peer_count" {
+  description = "Number of GlusterFS peers"
+  default = "1"
 }
 
 variable "glusterfs_storage_path" {
   description = "Path to the storage directory"
   default = "/storage"
+}
+
+
+variable "glusterfs_volume_name" {
+  description = "Name of the volume"
+  default = "volume1"
 }
