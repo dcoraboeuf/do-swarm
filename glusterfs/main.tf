@@ -2,9 +2,8 @@
 # GlusterFS server(s)
 ##################################################################################################
 
-resource "digitalocean_droplet" "glusterfs_server" {
-  count = "${var.glusterfs_count}"
-  name = "${format("${var.glusterfs_cluster}-%02d", count.index)}"
+resource "digitalocean_droplet" "glusterfs_primary" {
+  name = "${format("${var.glusterfs_cluster}-%02d", 0)}"
 
   image = "${var.do_image}"
   size = "${var.do_server_size}"
@@ -22,6 +21,14 @@ resource "digitalocean_droplet" "glusterfs_server" {
     agent = false
   }
 
+  provisioner "local-exec" {
+    command = "echo \"${self.ipv4_address_private}\" ${self.name} >> hosts.txt"
+  }
+
+  provisioner "local-exec" {
+    command = "echo \"${self.ipv4_address_private}:/storage \" >> hosts_string.txt"
+  }
+
   provisioner "remote-exec" {
     inline = [
       "apt-get update",
@@ -35,15 +42,5 @@ resource "digitalocean_droplet" "glusterfs_server" {
 }
 
 ##################################################################################################
-# GlusterFS peer
+# GlusterFS peer(s)
 ##################################################################################################
-
-//resource "null_resource" "glusterfs_peer" {
-//  count = "${var.glusterfs_count}"
-//
-//  connection {
-//    user = "${var.do_user}"
-//    private_key = "${file(var.do_ssh_key_private)}"
-//    agent = false
-//  }
-//}
