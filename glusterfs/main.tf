@@ -2,7 +2,7 @@
 # GlusterFS server(s)
 ##################################################################################################
 
-resource "digitalocean_droplet" "docker_swarm_master_initial" {
+resource "digitalocean_droplet" "glusterfs_server" {
   count = "${var.glusterfs_count}"
   name = "${format("${var.glusterfs_cluster}-%02d", count.index)}"
 
@@ -33,3 +33,17 @@ resource "digitalocean_droplet" "docker_swarm_master_initial" {
   }
 
 }
+
+##################################################################################################
+# GlusterFS peer
+##################################################################################################
+
+//resource "null_resource" "glusterfs_peer" {
+//  count = "${var.glusterfs_count}"
+//
+//  connection {
+//    user = "${var.do_user}"
+//    private_key = "${file(var.do_ssh_key_private)}"
+//    agent = false
+//  }
+//}
