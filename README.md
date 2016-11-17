@@ -65,3 +65,4 @@ You can also append some commands to run them directy. For example:
 ### Resources
 
 * GlusterFS at DigitalOcean - https://www.digitalocean.com/community/tutorials/how-to-create-a-redundant-storage-pool-using-glusterfs-on-ubuntu-servers
+* https://github.com/DO-Customer-Success/glusterfs-terraform-digitalocean
