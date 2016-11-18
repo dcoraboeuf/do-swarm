@@ -74,3 +74,8 @@ variable "swarm_agent_count" {
   description = "Number of agents to deploy"
   default = "2"
 }
+
+variable "swarm_storage_path" {
+  description = "Path, on each node, to the GlusterFS storage"
+  default = "/mnt/storage"
+}
