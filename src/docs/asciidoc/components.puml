@@ -42,6 +42,11 @@ cloud "DigitalOcean" {
         node "glusterfs-prober" <<droplet,ubuntu>> {
             component "glusterfs-server" as GlusterFSServerProber
             database "storage" as GlusterFSStorageProber
+            note right
+                Used for the initial peer probing
+                Normal member of the cluster
+                Can be down
+            end note
         }
 
     }
