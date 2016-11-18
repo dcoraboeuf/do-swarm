@@ -1,17 +1,24 @@
 @startuml
 cloud "DigitalOcean" {
 
-    node "master-initial" <<droplet,docker>> {
-        component "ip" <<network>> as MasterIP
-        component "docker" as MasterDocker
-    }
+    cloud "Docker Swarm" {
 
-    node "master" <<droplet,docker>> {
-        component "docker" as MasterSecondaryDocker
-    }
+        node "master-initial" <<droplet,coreos>> {
+            component "ip" <<network>> as MasterIP
+            component "docker" as MasterDocker
+            database "storage" as MasterStorage
+        }
 
-    node "agent" <<droplet,docker>> {
-        component "docker" as AgentDocker
+        node "master" <<droplet,coreos>> {
+            component "docker" as MasterSecondaryDocker
+            database "storage" as MasterSecondaryStorage
+        }
+
+        node "agent" <<droplet,coreos>> {
+            component "docker" as AgentDocker
+            database "storage" as AgentStorage
+        }
+
     }
 
     component "MasterIP" <<floating-ip>> as MasterFloatingIP
@@ -20,8 +27,46 @@ cloud "DigitalOcean" {
         component "swarm" <<a-record>> as SwarmDNS
     }
 
+    cloud "GlusterFS" {
+
+        node "glusterfs-primary" <<droplet,ubuntu>> {
+            component "glusterfs-server" as GlusterFSServerPrimary
+            database "storage" as GlusterFSStoragePrimary
+        }
+
+        node "glusterfs-peer" <<droplet,ubuntu>> {
+            component "glusterfs-server" as GlusterFSServerPeer
+            database "storage" as GlusterFSStoragePeer
+        }
+
+        node "glusterfs-prober" <<droplet,ubuntu>> {
+            component "glusterfs-server" as GlusterFSServerProber
+            database "storage" as GlusterFSStorageProber
+            note right
+                Used for the initial peer probing
+                Normal member of the cluster
+                Can be down
+            end note
+        }
+
+    }
+
 }
 
-MasterFloatingIP ..> MasterIP
-SwarmDNS ..> MasterFloatingIP
+GlusterFSServerPrimary -right- GlusterFSServerPeer: probe
+GlusterFSServerPeer -right- GlusterFSServerProber: probe
+
+GlusterFSServerPrimary -right- GlusterFSStoragePrimary
+GlusterFSServerPeer -right- GlusterFSStoragePeer
+GlusterFSServerProber -right- GlusterFSStorageProber
+
+MasterDocker -right- MasterSecondaryDocker:swarm
+MasterSecondaryDocker -right- AgentDocker:swarm
+
+MasterStorage --> GlusterFSStoragePrimary
+MasterSecondaryStorage --> GlusterFSStoragePrimary
+AgentStorage --> GlusterFSStoragePrimary
+
+MasterFloatingIP .left.> MasterIP
+SwarmDNS .down.> MasterFloatingIP
 @enduml
