@@ -26,6 +26,10 @@ resource "digitalocean_droplet" "docker_swarm_master_initial" {
   count = 1
   name = "${format("${var.swarm_name}-master-%02d", count.index)}"
 
+  depends_on = [
+    "module.glusterfs"
+  ]
+
   image = "${var.do_image}"
   size = "${var.do_agent_size}"
   region = "${var.do_region}"
