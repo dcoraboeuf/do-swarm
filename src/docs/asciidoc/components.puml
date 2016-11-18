@@ -3,17 +3,20 @@ cloud "DigitalOcean" {
 
     cloud "Docker Swarm" {
 
-        node "master-initial" <<droplet,docker>> {
+        node "master-initial" <<droplet,coreos>> {
             component "ip" <<network>> as MasterIP
             component "docker" as MasterDocker
+            database "storage" as MasterStorage
         }
 
-        node "master" <<droplet,docker>> {
+        node "master" <<droplet,coreos>> {
             component "docker" as MasterSecondaryDocker
+            database "storage" as MasterSecondaryStorage
         }
 
-        node "agent" <<droplet,docker>> {
+        node "agent" <<droplet,coreos>> {
             component "docker" as AgentDocker
+            database "storage" as AgentStorage
         }
 
     }
@@ -24,8 +27,41 @@ cloud "DigitalOcean" {
         component "swarm" <<a-record>> as SwarmDNS
     }
 
+    cloud "GlusterFS" {
+
+        node "glusterfs-primary" <<droplet,ubuntu>> {
+            component "glusterfs-server" as GlusterFSServerPrimary
+            database "storage" as GlusterFSStoragePrimary
+        }
+
+        node "glusterfs-peer" <<droplet,ubuntu>> {
+            component "glusterfs-server" as GlusterFSServerPeer
+            database "storage" as GlusterFSStoragePeer
+        }
+
+        node "glusterfs-prober" <<droplet,ubuntu>> {
+            component "glusterfs-server" as GlusterFSServerProber
+            database "storage" as GlusterFSStorageProber
+        }
+
+    }
+
 }
 
-MasterFloatingIP ..> MasterIP
-SwarmDNS ..> MasterFloatingIP
+GlusterFSServerPrimary -right- GlusterFSServerPeer: probe
+GlusterFSServerPeer -right- GlusterFSServerProber: probe
+
+GlusterFSServerPrimary -right- GlusterFSStoragePrimary
+GlusterFSServerPeer -right- GlusterFSStoragePeer
+GlusterFSServerProber -right- GlusterFSStorageProber
+
+MasterDocker -right- MasterSecondaryDocker:swarm
+MasterSecondaryDocker -right- AgentDocker:swarm
+
+MasterStorage --> GlusterFSStoragePrimary
+MasterSecondaryStorage --> GlusterFSStoragePrimary
+AgentStorage --> GlusterFSStoragePrimary
+
+MasterFloatingIP .left.> MasterIP
+SwarmDNS .down.> MasterFloatingIP
 @enduml
