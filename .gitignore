@@ -6,3 +6,5 @@ do-key*
 /.idea
 *.iml
 /env.sh
+/.terraform
+
