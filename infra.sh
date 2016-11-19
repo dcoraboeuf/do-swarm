@@ -88,7 +88,6 @@ docker service create \
      "^/(sys|proc|dev|host|etc)($|/)"
 
 docker service create --name cadvisor \
-    --publish 8083:8080 \
     --mode global \
     --network proxy \
     --mount "type=bind,source=/,target=/rootfs" \
@@ -96,6 +95,17 @@ docker service create --name cadvisor \
     --mount "type=bind,source=/sys,target=/sys" \
     --mount "type=bind,source=/var/lib/docker,target=/var/lib/docker" \
     google/cadvisor:v0.24.1
+
+sudo mkdir -p /mnt/storage/prometheus/data
+sudo mkdir -p /mnt/storage/prometheus/conf
+
+docker service create \
+    --name prometheus \
+    --network proxy \
+    --publish 9090:9090 \
+    --mount "type=bind,src=/mnt/storage/prometheus/conf/prometheus.yml,dst=/etc/prometheus/prometheus.yml" \
+    --mount "type=bind,src=/mnt/storage/prometheus/data,dst=/prometheus" \
+    prom/prometheus:v1.2.1
 
 # Sample Ontrack application
 
