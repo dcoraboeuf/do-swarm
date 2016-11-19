@@ -107,6 +107,12 @@ docker service create \
     --mount "type=bind,src=/mnt/storage/prometheus/data,dst=/prometheus" \
     prom/prometheus:v1.2.1
 
+docker service create \
+    --name grafana \
+    --network proxy \
+    --publish 3000:3000 \
+    grafana/grafana:3.1.1
+
 # Sample Ontrack application
 
 sudo mkdir -p /mnt/storage/ontrack &&
