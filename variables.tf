@@ -79,3 +79,7 @@ variable "swarm_storage_path" {
   description = "Path, on each node, to the GlusterFS storage"
   default = "/mnt/storage"
 }
+
+variable "swarm_storage_server_name" {
+  default = "mnt-storage"
+}

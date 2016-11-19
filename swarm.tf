@@ -40,6 +40,18 @@ resource "digitalocean_droplet" "docker_swarm_master_initial" {
 
 ssh_authorized_keys:
   - "${file("${var.do_ssh_key_public}")}"
+coreos:
+  units:
+    - name: rpc-statd.service
+      command: start
+      enable: true
+    - name: ${var.swarm_storage_server_name}.mount
+      command: start
+      content: |
+        [Mount]
+        What=${module.glusterfs.glusterfs_ip}:/${module.glusterfs.glusterfs_volume}
+        Where=${var.swarm_storage_path}
+        Type=nfs
 EOF
 
   ssh_keys = [
@@ -50,15 +62,6 @@ EOF
     user = "${var.do_user}"
     private_key = "${file(var.do_ssh_key_private)}"
     agent = false
-  }
-
-  provisioner "remote-exec" {
-    inline = [
-      "apt-get update",
-      "apt-get install glusterfs-client -y",
-      "mkdir /mnt/gluster",
-      "mount -t glusterfs ${module.glusterfs.glusterfs_ip}:/${module.glusterfs.glusterfs_volume} ${var.swarm_storage_path}",
-    ]
   }
 
   provisioner "remote-exec" {
@@ -117,6 +120,18 @@ resource "digitalocean_droplet" "docker_swarm_agent" {
 
 ssh_authorized_keys:
   - "${file("${var.do_ssh_key_public}")}"
+coreos:
+  units:
+    - name: rpc-statd.service
+      command: start
+      enable: true
+    - name: ${var.swarm_storage_server_name}.mount
+      command: start
+      content: |
+        [Mount]
+        What=${module.glusterfs.glusterfs_ip}:/${module.glusterfs.glusterfs_volume}
+        Where=${var.swarm_storage_path}
+        Type=nfs
 EOF
 
   ssh_keys = [
@@ -126,15 +141,6 @@ EOF
     user = "${var.do_user}"
     private_key = "${file(var.do_ssh_key_private)}"
     agent = false
-  }
-
-  provisioner "remote-exec" {
-    inline = [
-      "apt-get update",
-      "apt-get install glusterfs-client -y",
-      "mkdir /mnt/gluster",
-      "mount -t glusterfs ${module.glusterfs.glusterfs_ip}:/${module.glusterfs.glusterfs_volume} ${var.swarm_storage_path}",
-    ]
   }
 
   provisioner "file" {
