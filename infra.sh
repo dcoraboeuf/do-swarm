@@ -65,6 +65,13 @@ docker service create --name kibana \
     --label com.df.port=5601 \
     kibana:4.6
 
+docker service create --name logspout \
+    --network elk \
+    --mode global \
+    --mount "type=bind,source=/var/run/docker.sock,target=/var/run/docker.sock" \
+    -e SYSLOG_FORMAT=rfc3164 \
+    gliderlabs/logspout syslog://logstash:51415
+
 # Sample Ontrack application
 
 sudo mkdir -p /mnt/storage/ontrack &&
