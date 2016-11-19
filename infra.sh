@@ -72,6 +72,31 @@ docker service create --name logspout \
     -e SYSLOG_FORMAT=rfc3164 \
     gliderlabs/logspout syslog://logstash:51415
 
+# Monitoring
+
+docker service create \
+    --name node-exporter \
+    --mode global \
+    --network proxy \
+    --mount "type=bind,source=/proc,target=/host/proc" \
+    --mount "type=bind,source=/sys,target=/host/sys" \
+    --mount "type=bind,source=/,target=/rootfs" \
+    prom/node-exporter:0.12.0 \
+     -collector.procfs /host/proc \
+     -collector.sysfs /host/proc \
+     -collector.filesystem.ignored-mount-points \
+     "^/(sys|proc|dev|host|etc)($|/)"
+
+docker service create --name cadvisor \
+    --publish 8083:8080 \
+    --mode global \
+    --network proxy \
+    --mount "type=bind,source=/,target=/rootfs" \
+    --mount "type=bind,source=/var/run,target=/var/run" \
+    --mount "type=bind,source=/sys,target=/sys" \
+    --mount "type=bind,source=/var/lib/docker,target=/var/lib/docker" \
+    google/cadvisor:v0.24.1
+
 # Sample Ontrack application
 
 sudo mkdir -p /mnt/storage/ontrack &&
