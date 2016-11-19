@@ -109,6 +109,7 @@ docker service create \
 
 docker service create \
     --name grafana \
+    --name elk \
     --network proxy \
     --publish 3000:3000 \
     grafana/grafana:3.1.1
