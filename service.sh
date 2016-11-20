@@ -8,4 +8,10 @@ case ${SERVICE} in
     vis|visual|visualizer)
         open http://${SWARM_IP}:8081
         ;;
+    k|kibana)
+        open http://${SWARM_IP}/app/kibana
+        ;;
+    g|graf|grafana)
+        open http://${SWARM_IP}:3000
+        ;;
 esac

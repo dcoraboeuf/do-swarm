@@ -20,6 +20,15 @@ resource "null_resource" "docker_swarm_services" {
     destination = "/tmp/infra.sh"
   }
 
+  # Configuration directories
+
+  provisioner "remote-exec" {
+    inline = [
+      "mkdir -p /tmp/conf/logstash",
+      "mkdir -p /tmp/conf/prometheus/conf",
+    ]
+  }
+
   # Configuration of logstash
 
   provisioner "file" {

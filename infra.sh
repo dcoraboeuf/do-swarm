@@ -5,7 +5,7 @@
 function wait_for_service {
     SERVICE_NAME=$1
     while true; do
-        REPLICAS=$(docker service ls | grep ${SERVICE_NAME} | awk '{print $3}')
+        REPLICAS=$(docker service ls --filter "name=${SERVICE_NAME}" | grep ${SERVICE_NAME} | awk '{print $3}')
         if [[ ${REPLICAS} == "1/1" ]]; then
             break
         else
@@ -19,6 +19,7 @@ function wait_for_service {
 # Networks
 ################################################################################################
 
+echo "Creating the networks..."
 docker network create --driver overlay elk
 docker network create --driver overlay proxy
 
@@ -26,6 +27,7 @@ docker network create --driver overlay proxy
 # Basic services
 ################################################################################################
 
+echo "Creating the visualizer service..."
 docker service create \
   --name=visualizer \
   --publish=8081:8080/tcp \
@@ -37,6 +39,7 @@ docker service create \
 # Logging ELK
 ################################################################################################
 
+echo "Creating the elasticsearch service..."
 docker service create --name elasticsearch \
     --network elk \
     --publish 9200:9200 \
@@ -45,10 +48,12 @@ docker service create --name elasticsearch \
 
 wait_for_service 'elasticsearch'
 
+echo "Configuring the logstash service..."
 sudo mkdir -p /mnt/storage/logstash
 sudo cp -r /tmp/conf/logstash/* /mnt/storage/logstash
 sudo rm -rf /tmp/conf/logstash
 
+echo "Creating the logstash service..."
 docker service create --name logstash \
     --mount "type=bind,source=/mnt/storage/logstash,target=/conf" \
     --network elk \
@@ -58,6 +63,7 @@ docker service create --name logstash \
 
 wait_for_service 'logstash'
 
+echo "Creating the swarm-listener service..."
 docker service create --name swarm-listener \
     --network proxy \
     --mount "type=bind,source=/var/run/docker.sock,target=/var/run/docker.sock" \
@@ -66,6 +72,7 @@ docker service create --name swarm-listener \
     --constraint 'node.role==manager' \
     vfarcic/docker-flow-swarm-listener
 
+echo "Creating the proxy service..."
 docker service create --name proxy \
     -p 80:80 \
     -p 443:443 \
@@ -77,6 +84,7 @@ docker service create --name proxy \
 wait_for_service 'swarm-listener'
 wait_for_service 'proxy'
 
+echo "Creating the kibana service..."
 docker service create --name kibana \
     --network elk \
     --network proxy \
@@ -88,6 +96,7 @@ docker service create --name kibana \
     --label com.df.port=5601 \
     kibana:4.6
 
+echo "Creating the logspout service..."
 docker service create --name logspout \
     --network elk \
     --mode global \
@@ -99,6 +108,7 @@ docker service create --name logspout \
 # Monitoring
 ################################################################################################
 
+echo "Creating the node-exporter service..."
 docker service create \
     --name node-exporter \
     --mode global \
@@ -115,6 +125,7 @@ docker service create \
         -collector.textfile.directory /etc/node-exporter/ \
         -collectors.enabled="conntrack,diskstats,entropy,filefd,filesystem,loadavg,mdadm,meminfo,netdev,netstat,stat,textfile,time,vmstat,ipvs"
 
+echo "Creating the cadvisor service..."
 docker service create --name cadvisor \
     --mode global \
     --network proxy \
@@ -124,14 +135,13 @@ docker service create --name cadvisor \
     --mount "type=bind,source=/var/lib/docker,target=/var/lib/docker" \
     google/cadvisor:v0.24.1
 
-wait_for_service 'node-exporter'
-wait_for_service 'cadvisor'
-
+echo "Configuring the prometheus service..."
 sudo mkdir -p /mnt/storage/prometheus/data
 sudo mkdir -p /mnt/storage/prometheus/conf
 sudo cp -r /tmp/conf/prometheus/conf/* /mnt/storage/prometheus/conf
 sudo rm -rf /tmp/conf/prometheus/conf
 
+echo "Creating the prometheus service..."
 docker service create \
     --name prometheus \
     --network proxy \
@@ -142,9 +152,10 @@ docker service create \
 
 wait_for_service 'prometheus'
 
+echo "Creating the grafana service..."
 docker service create \
     --name grafana \
-    --name elk \
+    --network elk \
     --network proxy \
     --publish 3000:3000 \
     grafana/grafana:3.1.1
