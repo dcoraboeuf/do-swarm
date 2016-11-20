@@ -20,6 +20,24 @@ resource "null_resource" "docker_swarm_services" {
     destination = "/tmp/infra.sh"
   }
 
+  # Configuration of logstash
+
+  provisioner "file" {
+    source = "conf/logstash/",
+    destination = "/mnt/storage/logstash"
+  }
+
+  # Configuration of prometheus
+
+  provisioner "file" {
+    source = "conf/prometheus/",
+    destination = "/mnt/storage/prometheus/conf"
+  }
+
+  # TODO #6 Configuration of Grafana
+
+  # Running all services
+
   provisioner "remote-exec" {
     inline = [
       "chmod u+x /tmp/infra.sh",
