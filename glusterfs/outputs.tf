@@ -1,5 +1,5 @@
 output "glusterfs_ip" {
-  value = "${digitalocean_droplet.glusterfs_primary.ipv4_address}"
+  value = "${digitalocean_floating_ip.glusterfs_floating_ip.ip_address}"
 }
 
 output "glusterfs_volume" {

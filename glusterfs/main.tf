@@ -154,3 +154,15 @@ resource "digitalocean_droplet" "glusterfs_prober" {
   }
 
 }
+
+##################################################################################################
+# Floating IP for the cluster
+##################################################################################################
+
+resource "digitalocean_floating_ip" "glusterfs_floating_ip" {
+  droplet_id = "${digitalocean_droplet.glusterfs_primary.id}"
+  region = "${digitalocean_droplet.glusterfs_primary.region}"
+  depends_on = [
+    "digitalocean_droplet.glusterfs_prober"
+  ]
+}
