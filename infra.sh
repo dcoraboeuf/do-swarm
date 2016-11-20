@@ -45,6 +45,10 @@ docker service create --name elasticsearch \
 
 wait_for_service 'elasticsearch'
 
+sudo mkdir -p /mnt/storage/logstash
+sudo cp -r /tmp/conf/logstash/* /mnt/storage/logstash
+sudo rm -rf /tmp/conf/logstash
+
 docker service create --name logstash \
     --mount "type=bind,source=/mnt/storage/logstash,target=/conf" \
     --network elk \
@@ -124,6 +128,9 @@ wait_for_service 'node-exporter'
 wait_for_service 'cadvisor'
 
 sudo mkdir -p /mnt/storage/prometheus/data
+sudo mkdir -p /mnt/storage/prometheus/conf
+sudo cp -r /tmp/conf/prometheus/conf/* /mnt/storage/prometheus/conf
+sudo rm -rf /tmp/conf/prometheus/conf
 
 docker service create \
     --name prometheus \

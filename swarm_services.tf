@@ -24,14 +24,14 @@ resource "null_resource" "docker_swarm_services" {
 
   provisioner "file" {
     source = "conf/logstash/",
-    destination = "/mnt/storage/logstash"
+    destination = "/tmp/conf/logstash"
   }
 
   # Configuration of prometheus
 
   provisioner "file" {
     source = "conf/prometheus/",
-    destination = "/mnt/storage/prometheus/conf"
+    destination = "/tmp/conf/prometheus/conf"
   }
 
   # TODO #6 Configuration of Grafana
