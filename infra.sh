@@ -152,12 +152,20 @@ docker service create \
 
 wait_for_service 'prometheus'
 
+echo "Configuring the grafana service..."
+sudo mkdir -p /mnt/storage/grafana/data
+sudo mkdir -p /mnt/storage/grafana/conf
+sudo cp -r /tmp/conf/grafana/conf/* /mnt/storage/grafana/conf
+sudo rm -rf /tmp/conf/grafana/conf
+
 echo "Creating the grafana service..."
 docker service create \
     --name grafana \
     --network elk \
     --network proxy \
     --publish 3000:3000 \
+    --mount "type=bind,src=/mnt/storage/grafana/data,dst=/var/lib/grafana" \
+    --mount "type=bind,src=/mnt/storage/grafana/conf,dst=/etc/grafana" \
     grafana/grafana:3.1.1
 
 wait_for_service 'grafana'

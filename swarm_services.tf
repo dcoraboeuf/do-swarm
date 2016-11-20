@@ -26,6 +26,7 @@ resource "null_resource" "docker_swarm_services" {
     inline = [
       "mkdir -p /tmp/conf/logstash",
       "mkdir -p /tmp/conf/prometheus/conf",
+      "mkdir -p /tmp/conf/grafana/conf",
     ]
   }
 
@@ -43,7 +44,12 @@ resource "null_resource" "docker_swarm_services" {
     destination = "/tmp/conf/prometheus/conf"
   }
 
-  # TODO #6 Configuration of Grafana
+  # Configuration of Grafana
+
+  provisioner "file" {
+    source = "conf/grafana/conf/",
+    destination = "/tmp/conf/grafana/conf"
+  }
 
   # Running all services
 
