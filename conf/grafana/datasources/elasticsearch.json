@@ -1,0 +1,8 @@
+{
+  "name": "elasticsearch",
+  "type": "elasticsearch",
+  "url": "http://elasticsearch:9200",
+  "database": "logstash-*",
+  "access": "proxy",
+  "basicAuth": false
+}

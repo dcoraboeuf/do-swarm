@@ -61,3 +61,37 @@ resource "null_resource" "docker_swarm_services" {
   }
 
 }
+
+##################################################################
+# Grafana provisioning
+##################################################################
+
+resource "null_resource" "grafana_provisioning" {
+
+  depends_on = [
+    "null_resource.docker_swarm_services",
+  ]
+
+  provisioner "local-exec" {
+    command = <<EOF
+curl --fail --silent -v \
+  "http://${digitalocean_droplet.docker_swarm_master_initial.ipv4_address}:3000/api/datasources" \
+  --user admin:admin \
+  --header "Content-Type: application/json" \
+  -X POST \
+  --data @conf/grafana/datasources/prometheus.json
+EOF
+  }
+
+  provisioner "local-exec" {
+    command = <<EOF
+curl --fail --silent -v \
+  "http://${digitalocean_droplet.docker_swarm_master_initial.ipv4_address}:3000/api/datasources" \
+  --user admin:admin \
+  --header "Content-Type: application/json" \
+  -X POST \
+  --data @conf/grafana/datasources/elasticsearch.json
+EOF
+  }
+
+}
