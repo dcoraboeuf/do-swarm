@@ -72,6 +72,8 @@ resource "null_resource" "grafana_provisioning" {
     "null_resource.docker_swarm_services",
   ]
 
+  # Data sources
+
   provisioner "local-exec" {
     command = <<EOF
 curl --fail --silent -v \
@@ -91,6 +93,41 @@ curl --fail --silent -v \
   --header "Content-Type: application/json" \
   -X POST \
   --data @conf/grafana/datasources/elasticsearch.json
+EOF
+  }
+
+  # Dashboards
+
+  provisioner "local-exec" {
+    command = <<EOF
+curl --fail --silent -v \
+  "http://${digitalocean_droplet.docker_swarm_master_initial.ipv4_address}:3000/api/dashboards/db" \
+  --user admin:admin \
+  --header "Content-Type: application/json" \
+  -X POST \
+  --data @conf/grafana/dashboards/node-exporter-server-metrics_rev3.json
+EOF
+  }
+
+  provisioner "local-exec" {
+    command = <<EOF
+curl --fail --silent -v \
+  "http://${digitalocean_droplet.docker_swarm_master_initial.ipv4_address}:3000/api/dashboards/db" \
+  --user admin:admin \
+  --header "Content-Type: application/json" \
+  -X POST \
+  --data @conf/grafana/dashboards/node-exporter-single-server_rev1.json
+EOF
+  }
+
+  provisioner "local-exec" {
+    command = <<EOF
+curl --fail --silent -v \
+  "http://${digitalocean_droplet.docker_swarm_master_initial.ipv4_address}:3000/api/dashboards/db" \
+  --user admin:admin \
+  --header "Content-Type: application/json" \
+  -X POST \
+  --data @conf/grafana/dashboards/docker-swarm-container-overview_rev13.json
 EOF
   }
 
