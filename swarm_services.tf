@@ -72,6 +72,11 @@ resource "null_resource" "grafana_provisioning" {
     "null_resource.docker_swarm_services",
   ]
 
+  # Arbitrarily wait for Grafana to start
+  provisioner "local-exec" {
+   command = "sleep 10s"
+  }
+
   # Data sources
 
   provisioner "local-exec" {
