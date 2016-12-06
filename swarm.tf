@@ -147,7 +147,7 @@ EOF
   }
 
   provisioner "file" {
-    source = "worker.token"
+    source = "manager.token"
     destination = "${var.swarm_token_dir}/manager.token"
   }
 
