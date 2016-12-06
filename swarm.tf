@@ -91,11 +91,18 @@ resource "digitalocean_floating_ip" "docker_swarm_floating_ip" {
   region = "${digitalocean_droplet.docker_swarm_master_initial.region}"
 }
 
-resource "digitalocean_record" "docker_swarm_dns_record" {
+resource "digitalocean_record" "docker_swarm_dns_record_primary" {
   domain = "${var.dns_domain}"
   type = "A"
   name = "${var.dns_domain_name}"
   value = "${digitalocean_floating_ip.docker_swarm_floating_ip.ip_address}"
+}
+
+resource "digitalocean_record" "docker_swarm_dns_record_initial" {
+  domain = "${var.dns_domain}"
+  type = "A"
+  name = "${var.dns_domain_name}"
+  value = "${digitalocean_droplet.docker_swarm_master_initial.ipv4_address}"
 }
 
 ##################################################################################################################
@@ -149,6 +156,14 @@ EOF
       "docker swarm join --token $(cat ${var.swarm_token_dir}/manager.token) ${digitalocean_droplet.docker_swarm_master_initial.ipv4_address}:2377"
     ]
   }
+}
+
+resource "digitalocean_record" "docker_swarm_dns_record" {
+  count = "${var.swarm_master_count}"
+  domain = "${var.dns_domain}"
+  type = "A"
+  name = "${var.dns_domain_name}"
+  value = "${element(digitalocean_droplet.docker_swarm_master.*.ipv4_address, count.index)}"
 }
 
 ##################################################################################################################
