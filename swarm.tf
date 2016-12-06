@@ -99,8 +99,57 @@ resource "digitalocean_record" "docker_swarm_dns_record" {
 }
 
 ##################################################################################################################
-# TODO Other masters
+# Other masters
 ##################################################################################################################
+
+resource "digitalocean_droplet" "docker_swarm_master" {
+  count = "${var.swarm_master_count}"
+  name = "${format("${var.swarm_name}-master-%02d", count.index + 1)}"
+
+  image = "${var.do_image}"
+  size = "${var.do_agent_size}"
+  region = "${var.do_region}"
+  private_networking = true
+
+  user_data = <<EOF
+#cloud-config
+
+ssh_authorized_keys:
+  - "${file("${var.do_ssh_key_public}")}"
+coreos:
+  units:
+    - name: rpc-statd.service
+      command: start
+      enable: true
+    - name: ${var.swarm_storage_server_name}.mount
+      command: start
+      content: |
+        [Mount]
+        What=${module.glusterfs.glusterfs_ip}:/${module.glusterfs.glusterfs_volume}
+        Where=${var.swarm_storage_path}
+        Type=nfs
+EOF
+
+  ssh_keys = [
+    "${digitalocean_ssh_key.docker_swarm_ssh_key.id}"]
+
+  connection {
+    user = "${var.do_user}"
+    private_key = "${file(var.do_ssh_key_private)}"
+    agent = false
+  }
+
+  provisioner "file" {
+    source = "worker.token"
+    destination = "${var.swarm_token_dir}/manager.token"
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "docker swarm join --token $(cat ${var.swarm_token_dir}/manager.token) ${digitalocean_droplet.docker_swarm_master_initial.ipv4_address}:2377"
+    ]
+  }
+}
 
 ##################################################################################################################
 # Swarm agents
